@@ -2,6 +2,16 @@
 
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
+# Project Writeup
+
+Please see this [link](https://github.com/peparhugo/CarND-Behavioral-Cloning-P3/blob/master/writeup_template.md) for model design and implementation. 
+
+model.ipynb was used to design and evolve the model. 
+
+model.py was used to generate run1.mp4 for the project submission.
+
+run1.mp4 shows sample driving results for steering wheel angle regression.
+
 Overview
 ---
 This repository contains starting files for P3, Behavioral Cloning.
