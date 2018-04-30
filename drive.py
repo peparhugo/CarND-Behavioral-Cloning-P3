@@ -3,7 +3,7 @@ import base64
 from datetime import datetime
 import os
 import shutil
-
+import cv2
 import numpy as np
 import socketio
 import eventlet
@@ -19,6 +19,21 @@ app = Flask(__name__)
 model = None
 prev_image_array = None
 
+def scaling(img,scale_x,scale_y):
+    return cv2.resize(img,None,fx=scale_x, fy=scale_y, interpolation = cv2.INTER_LINEAR)
+
+def min_max_normalization(x,min,max):
+    """
+    This function takes an n by m array and normalizes each value based on the average of min and max values
+    of the RBG scale (min=0 and max=255).
+    
+    It return an n by m array
+    """
+    avg_value=(max+min)/2.0
+    norm_array = np.zeros(x.shape)+avg_value
+    normalized_x= (x-norm_array)/norm_array
+    return normalized_x
+
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -32,9 +47,10 @@ def telemetry(sid, data):
         # The current image from the center camera of the car
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
-        image_array = np.asarray(image)
+        image_array = scaling(np.asarray(image),0.5,0.5)
+        image_array=min_max_normalization(image_array,0,255)
         steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
-        throttle = 0.2
+        throttle = 0.20
         print(steering_angle, throttle)
         send_control(steering_angle, throttle)
 
@@ -97,4 +113,4 @@ if __name__ == '__main__':
     app = socketio.Middleware(sio, app)
 
     # deploy as an eventlet WSGI server
-    eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
+eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
